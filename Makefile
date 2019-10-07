@@ -9,7 +9,7 @@ endif
 
 PKGS=oUnit,extlib,unix,sexplib,str
 
-BUILD=corebuild -r -use-ocamlfind -pkg $(PKGS) $(OCAMLOPT)
+BUILD=ocamlbuild -r -use-ocamlfind -pkg $(PKGS) $(OCAMLOPT)
 
 main: main.ml compile.ml runner.ml parser.ml
 	$(BUILD) main.native
