@@ -1,9 +1,9 @@
 UNAME := $(shell uname)
 ifeq ($(UNAME), Linux)
-  FORMAT=aout
+  FORMAT=elf64
 else
 ifeq ($(UNAME), Darwin)
-  FORMAT=macho
+  FORMAT=macho64
 endif
 endif
 
@@ -21,7 +21,7 @@ test: compile.ml runner.ml test.ml parser.ml
 	mv test.native test
 
 output/%.run: output/%.o main.c
-	clang -g -m32 -mstackrealign -o $@ main.c $<
+	clang -g -mstackrealign -o $@ main.c $<
 
 output/%.o: output/%.s
 	nasm -f $(FORMAT) -o $@ $<
