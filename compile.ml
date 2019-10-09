@@ -8,11 +8,11 @@ let rec find ls x =
   | (y,v)::rest ->
     if y = x then Some(v) else find rest x
 
-let stackloc si = RegOffset(-4 * si, ESP)
+let stackloc si = RegOffset(-8 * si, RSP)
 
-let true_const = HexConst(0xFFFFFFFE)
-let false_const = HexConst(0x7FFFFFFE)
-
+let true_const  = HexConst(0xFFFFFFFFFFFFFFFEL)
+let false_const = HexConst(0x7FFFFFFFFFFFFFFEL)
+                
 let rec well_formed_e (e : expr) (env : (string * int) list) : string list =
   match e with
   | ENumber(_)
@@ -42,9 +42,10 @@ let compile_to_string prog =
   let prelude = "  section .text\n" ^
                 "  extern error\n" ^
                 "  global our_code_starts_here\n" ^
-                "our_code_starts_here:\n" in
+                "our_code_starts_here:\n" ^
+                "  mov [rsp - 8], rdi\n" in
   let postlude = [IRet]
     (* TODO *) in
-  let compiled = (compile_expr prog 1 [("input", -1)]) in
+  let compiled = (compile_expr prog 2 [("input", 1)]) in
   let as_assembly_string = (to_asm (compiled @ postlude)) in
   sprintf "%s%s\n" prelude as_assembly_string

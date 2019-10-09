@@ -1,8 +1,10 @@
 open Printf
 
 type reg =
-  | EAX
-  | ESP
+  | RAX
+  | RBX
+  | RDI
+  | RSP
 
 type size =
   | DWORD_PTR
@@ -11,7 +13,8 @@ type size =
 
 type arg =
   | Const of int
-  | HexConst of int
+  | Const64 of int64
+  | HexConst of int64
   | Reg of reg
   | RegOffset of int * reg
   | Sized of size * arg
@@ -53,8 +56,10 @@ let gen_temp base =
 
 let r_to_asm (r : reg) : string =
   match r with
-    | EAX -> "eax"
-    | ESP -> "esp"
+    | RAX -> "rax"
+    | RBX -> "rbx"
+    | RDI -> "rdi"
+    | RSP -> "rsp"
 
 let s_to_asm (s : size) : string =
   match s with
@@ -65,7 +70,8 @@ let s_to_asm (s : size) : string =
 let rec arg_to_asm (a : arg) : string =
   match a with
     | Const(n) -> sprintf "%d" n
-    | HexConst(n) -> sprintf "%#x" n
+    | Const64(n) -> sprintf "%Ld" n
+    | HexConst(n) -> sprintf "%#Lx" n
     | Reg(r) -> r_to_asm r
     | RegOffset(n, r) ->
       (* TODO *)
