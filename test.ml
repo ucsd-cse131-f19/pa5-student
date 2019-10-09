@@ -33,8 +33,8 @@ let isBoolTest = "(isBool false)"
 let isBoolTestF = "(isBool 5)"
 let isNumTest = "(isNum 5)"
 
-let num_p_overflow = "1073741824"
-let num_p_underflow = "-1073741825"
+let num_p_overflow = "4611686018427387904"
+let num_p_underflow = "-4611686018427387905"
 
 let failLet = "(let ((x  1) (y 1) (x 10)) x)"
 let failID = "x"
@@ -59,8 +59,8 @@ let input_tests =
  ; t_i "input_shadow" "(let ((input 10)) input)" "10" ["true"]
 
  ; terr_i "inputerr1" "input" "input must be a boolean or a number" ["ABC"]
- ; terr_i "inputerr_max" "input" "input is not a representable number" ["1073741824"]
- ; terr_i "inputerr_min" "input" "input is not a representable number" ["-1073741825"]
+ ; terr_i "inputerr_max" "input" "input is not a representable number" ["4611686018427387904"]
+ ; terr_i "inputerr_min" "input" "input is not a representable number" ["-4611686018427387905"]
  ; terr_i "inputerr_case" "input" "input must be a boolean or a number" ["False"]
  ]
 
