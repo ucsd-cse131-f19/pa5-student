@@ -3,8 +3,8 @@
 #include <string.h>
 #include <errno.h>
 
-#define TRUE 0xFFFFFFFFFFFFFFFEL
-#define FALSE 0x7FFFFFFFFFFFFFFEL
+#define TRUE 0x0000000000000002L
+#define FALSE 0x0000000000000000L
 
 #define BOA_MIN (- (1L << 62))
 #define BOA_MAX ((1L << 62) - 1)

@@ -10,8 +10,8 @@ let rec find ls x =
 
 let stackloc si = RegOffset(-8 * si, RSP)
 
-let true_const  = HexConst(0xFFFFFFFFFFFFFFFEL)
-let false_const = HexConst(0x7FFFFFFFFFFFFFFEL)
+let true_const  = HexConst(0x0000000000000002L)
+let false_const = HexConst(0x0000000000000000L)
                 
 let rec well_formed_e (e : expr) (env : (string * int) list) : string list =
   match e with
