@@ -2,8 +2,8 @@ open Sexplib.Sexp
 module Sexp = Sexplib.Sexp
 open Expr
 
-let boa_max = int_of_float(2.**30.) - 1;;
-let boa_min = -int_of_float(2.**30.);;
+let boa_max = int_of_float(2.**62.) - 1;;
+let boa_min = -int_of_float(2.**62.);;
 let valid_id_regex = Str.regexp "[a-zA-Z][a-zA-Z0-9]*"
 let number_regex = Str.regexp "^[-]?[0-9]+"
 let reserved_words = ["let"; "add1"; "sub1"; "isNum"; "isBool"; "if"]
