@@ -13,7 +13,9 @@ type prim2 =
   | Equal
 
 type expr =
-  | ELet of (string * expr) list * expr
+  | ELet of (string * expr) list * expr list
+  | EWhile of expr * expr list
+  | ESet of string * expr
   | EIf of expr * expr * expr
   | EId of string
   | ENumber of int
