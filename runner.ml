@@ -96,6 +96,9 @@ let try_parse prog_str =
   try Right(parse_string prog_str) with
   | Failure s -> Left("Parse error: " ^ s)
 
+let try_compile (e: Expr.expr) =
+  try (let _ = compile_to_string e in "Compilation successful.") with
+  | Failure s -> ("Compile error: " ^ s)
 
 let test_run program_str outfile expected (args : string list) _ =
   let full_outfile = "output/" ^ outfile in

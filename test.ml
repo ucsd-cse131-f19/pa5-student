@@ -3,6 +3,7 @@ open Runner
 open Printf
 open OUnit2
 open Expr
+open ExtLib
 
 let t_i name program expected args = name>::test_run program name expected args
 let t name program expected = name>::test_run program name expected []
@@ -10,6 +11,10 @@ let terr_i name program expected args = name>::test_err program name expected ar
 let t_err name program expected = name>::test_err program name expected []
 let t_parse name program expected =
   name>::(fun _ -> assert_equal expected (Runner.parse_string program));;
+let t_compile_err (name: string) (program: string) (expected: string) =
+  name>::(fun _ ->
+    (assert_equal expected (try_compile (Runner.parse_string program))
+       ~printer: (fun s -> s) ~cmp: (fun expected actual -> (String.exists actual expected))))
 
 let num_neg = "(+ -42 10)";;
 let forty_one = "(sub1 42)";;
@@ -28,6 +33,8 @@ let complexExpression = "(let ((x 10) (y 5) (z 3)) (let ((t 2)) " ^
                         "(add1 (+ x (+ y (* (- t z) x))))))"
 let ifTest = "(if true 5 6)"
 let ifTestLet = "(let ((x 5)) (if (== x 7) 7 8))"
+let setTest = "(let ((x 1)) (set x 2) x)"
+let whileTest = "(let ((c 10) (x 0)) (while (> c x) (set x (+ x 1))) x)"
 let boolTest = "true"
 let isBoolTest = "(isBool false)"
 let isBoolTestF = "(isBool 5)"
@@ -47,21 +54,18 @@ let testFailList =
    t_err "failTypes" failTypes "expected a number";
    t_err "parserNumOverflow" num_p_overflow "Non-representable number";
    t_err "parserNumUnderflow" num_p_underflow "Non-representable number";
-   terr_i "failInput" "input" "input must be a boolean or a number" ["0r"];
-   terr_i "failInputType" "(add1 input)" "expected a number" ["true"];
+   terr_i "failInput" "input" "input must be a number" ["0r"];
   ]
 
 let input_tests =
  [ t_i "input1" "input" "42" ["42"]
- ; t_i "input2" "input" "true" ["true"]
- ; t_i "input3" "input" "false" ["false"]
- ; t_i "input_default" "input" "false" []
- ; t_i "input_shadow" "(let ((input 10)) input)" "10" ["true"]
+ ; t_i "input_default" "input" "0" []
+ ; t_i "input_shadow" "(let ((input 10)) input)" "10" ["0"]
 
- ; terr_i "inputerr1" "input" "input must be a boolean or a number" ["ABC"]
+ ; terr_i "inputerr1" "input" "input must be a number" ["ABC"]
  ; terr_i "inputerr_max" "input" "input is not a representable number" ["4611686018427387904"]
  ; terr_i "inputerr_min" "input" "input is not a representable number" ["-4611686018427387905"]
- ; terr_i "inputerr_case" "input" "input must be a boolean or a number" ["False"]
+ ; terr_i "inputerr_case" "input" "input must be a number" ["False"]
  ]
 
 let suite =
@@ -78,6 +82,8 @@ let suite =
    t "boolTest" boolTest "true";
    t "if_Test" ifTest "5";
    t "ifTestLet" ifTestLet "8";
+   t "setTest" setTest "2";
+   t "whileTest" whileTest "10";
    t "isBoolTest" isBoolTest "true";
    t "isBoolTestF" isBoolTestF "false";
    t "isNumTest" isNumTest "true";
