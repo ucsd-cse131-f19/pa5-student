@@ -12,6 +12,18 @@ let stackloc si = RegOffset(-8 * si, RSP)
 
 let true_const  = HexConst(0x0000000000000002L)
 let false_const = HexConst(0x0000000000000000L)
+
+type typ =
+  | TNumber
+  | TBoolean
+
+let rec tc_e (e : expr) (env : (string * typ) list) : typ =
+  match e with
+  | ENumber(_) -> TNumber
+  | EBool(_) -> TBoolean
+  (* TODO *)
+  | _ -> failwith "Not yet implemented"
+ 
                 
 let rec well_formed_e (e : expr) (env : (string * int) list) : string list =
   match e with
@@ -39,6 +51,7 @@ and compile_prim2 op e1 e2 si env =
 
 let compile_to_string prog =
   let _ = check prog in
+  let _ = tc_e prog [("input", TNumber)] in
   let prelude = "  section .text\n" ^
                 "  extern error\n" ^
                 "  global our_code_starts_here\n" ^
