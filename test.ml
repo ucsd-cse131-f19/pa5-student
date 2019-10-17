@@ -47,6 +47,14 @@ let failLet = "(let ((x  1) (y 1) (x 10)) x)"
 let failID = "x"
 let failTypes = "(add1 true)"
 
+let autograde_compile_fail_tests =
+  [
+    ("add1_arguments", "(add1 true)", "expected a number");
+    ("plus_arguments", "(+ 1 true)", "expected a number");
+    ("if_condition", "(if 1 2 (+ 3 2))", "If condition expected a bool");
+    ("if_branches", "(if true false (+ 3 2))", "If branches must have matching types");
+  ]
+
 let testFailList =
   [
    t_err "failLet" failLet "Multiple bindings for variable identifier x";

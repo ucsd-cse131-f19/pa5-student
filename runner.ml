@@ -46,6 +46,14 @@ let string_of_file file_name =
   really_input inchan buf 0 (in_channel_length inchan);
   Bytes.to_string buf
 
+let rec waitpids (pid1: int) (pid2: int) : int * process_status =
+  let pid, status = Unix.waitpid ([]) (-1) in
+  if pid = pid1 || pid = pid2 then
+    (pid, status)
+  else
+    waitpids pid1 pid2
+;;
+
 let run p out args=
   let maybe_asm_string =
     try Right(compile_to_string p)
@@ -79,15 +87,25 @@ let run p out args=
     | Right(msg) ->
       printf "%s" msg;
       let ran_pid = Unix.create_process ("./" ^ out ^ ".run") (Array.of_list (""::args)) rstdin rstdout rstderr in
-      let (_, status) = waitpid [] ran_pid in
-      match status with
-        | WEXITED 0 -> Right(string_of_file rstdout_name)
-        | WEXITED n -> Left(sprintf "Error %d: %s" n (string_of_file rstderr_name))
-        | WSIGNALED n ->
-          Left(sprintf "Signalled with %d while running %s." n out)
-        | WSTOPPED n ->
-          Left(sprintf "Stopped with signal %d while running %s." n out) in
-
+      let sleep_pid = Unix.create_process "sleep" (Array.of_list (""::"5"::[])) rstdin rstdout rstderr in
+      let (finished_pid, status) = waitpids ran_pid sleep_pid in
+      if finished_pid = sleep_pid then
+        begin
+          Unix.kill ran_pid 9;
+          Left(sprintf "Test %s timed out" out)
+        end
+      else
+        begin
+          Unix.kill sleep_pid 9;
+          match status with
+          | WEXITED 0 -> Right(string_of_file rstdout_name)
+          | WEXITED n -> Left(sprintf "Error %d: %s" n (string_of_file rstderr_name))
+          | WSIGNALED n ->
+             Left(sprintf "Signalled with %d while running %s." n out)
+          | WSTOPPED n ->
+             Left(sprintf "Stopped with signal %d while running %s." n out)
+        end
+    in
     List.iter close [bstdout; bstderr; bstdin; rstdout; rstderr; rstdin];
     List.iter unlink [bstdout_name; bstderr_name; rstdout_name; rstderr_name];
     result
