@@ -49,10 +49,10 @@ let failTypes = "(add1 true)"
 
 let autograde_compile_fail_tests =
   [
-    ("add1_arguments", "(add1 true)", "expected a number");
-    ("plus_arguments", "(+ 1 true)", "expected a number");
-    ("if_condition", "(if 1 2 (+ 3 2))", "If condition expected a bool");
-    ("if_branches", "(if true false (+ 3 2))", "If branches must have matching types");
+    ("add1_arguments", "(add1 true)", "Type mismatch");
+    ("plus_arguments", "(+ 1 true)", "Type mismatch");
+    ("if_condition", "(if 1 2 (+ 3 2))", "Type mismatch");
+    ("if_branches", "(if true false (+ 3 2))", "Type mismatch");
   ]
 
 let testFailList =
