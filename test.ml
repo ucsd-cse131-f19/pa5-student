@@ -45,7 +45,6 @@ let num_p_underflow = "-4611686018427387905"
 
 let failLet = "(let ((x  1) (y 1) (x 10)) x)"
 let failID = "x"
-let failTypes = "(add1 true)"
 
 let autograde_compile_fail_tests =
   [
@@ -59,7 +58,6 @@ let testFailList =
   [
    t_err "failLet" failLet "Multiple bindings for variable identifier x";
    t_err "failID" failID "Variable identifier x unbound";
-   t_err "failTypes" failTypes "expected a number";
    t_err "parserNumOverflow" num_p_overflow "Non-representable number";
    t_err "parserNumUnderflow" num_p_underflow "Non-representable number";
    terr_i "failInput" "input" "input must be a number" ["0r"];
