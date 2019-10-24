@@ -13,7 +13,7 @@ let t_parse name program expected =
   name>::(fun _ -> assert_equal expected (Runner.parse_string program));;
 let t_compile_err (name: string) (program: string) (expected: string) =
   name>::(fun _ ->
-    (assert_equal expected (try_compile (Runner.parse_string program))
+    (assert_equal expected (try_compile (Runner.parse_string_full program))
        ~printer: (fun s -> s) ~cmp: (fun expected actual -> (String.exists actual expected))))
 
 let num_neg = "(+ -42 10)";;
@@ -39,6 +39,7 @@ let boolTest = "true"
 let isBoolTest = "(isBool false)"
 let isBoolTestF = "(isBool 5)"
 let isNumTest = "(isNum 5)"
+let defTest = "(def abs_val (x : Num) : Num (if (< x 0) (* -1 x) x)) (abs_val -3)"
 
 let num_p_overflow = "4611686018427387904"
 let num_p_underflow = "-4611686018427387905"
@@ -52,6 +53,7 @@ let autograde_compile_fail_tests =
     ("plus_arguments", "(+ 1 true)", "Type mismatch");
     ("if_condition", "(if 1 2 (+ 3 2))", "Type mismatch");
     ("if_branches", "(if true false (+ 3 2))", "Type mismatch");
+    ("fun_arguments", "(def mul2 (x : Num) : Num (* x 2)) (mul2 false)", "Type mismatch");
   ]
 
 let testFailList =
@@ -93,6 +95,7 @@ let suite =
    t "isBoolTest" isBoolTest "true";
    t "isBoolTestF" isBoolTestF "false";
    t "isNumTest" isNumTest "true";
+   t "defTest" defTest "3";
    t_i "inputTest" "(add1 input)" "6" ["5"];
   ] @ testFailList
   @ MyTests.myTestList

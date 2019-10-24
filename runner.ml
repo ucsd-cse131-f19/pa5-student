@@ -5,6 +5,7 @@ open Compile
 open Printf
 open OUnit2
 open ExtLib
+open Expr
 
 type ('a, 'b) either =
   | Left of 'a
@@ -19,16 +20,25 @@ let parse_string s =
   let sexp = Sexplib.Sexp.of_string s in
   Parser.parse sexp
 
+let parse_string_full s =
+  match Sexplib.Sexp.of_string ("(" ^ s ^ ")") with
+    | List(sexps) -> Parser.parse_program sexps
+    | Atom(_) -> failwith "Impossible"
+
 let parse_file input_file =
   let sexp = Sexplib.Sexp.input_sexp input_file in
   Parser.parse sexp
 
+let parse_file_full input_file =
+  let sexps = Sexplib.Sexp.input_sexps input_file in
+  Parser.parse_program sexps
+
 let compile_file_to_string input_file =
-  let input_program = parse_file input_file in
+  let input_program = parse_file_full input_file in
   (compile_to_string input_program);;
 
 let compile_string_to_string s =
-  let input_program = parse_string s in
+  let input_program = parse_string_full s in
   (compile_to_string input_program);;
 
 let make_tmpfiles name =
@@ -110,23 +120,29 @@ let run p out args=
     List.iter unlink [bstdout_name; bstderr_name; rstdout_name; rstderr_name];
     result
 
+let try_parse_full prog_str =
+  try Right(parse_string_full prog_str) with
+  | Failure s -> Left("Parse error: " ^ s)
 let try_parse prog_str =
   try Right(parse_string prog_str) with
   | Failure s -> Left("Parse error: " ^ s)
 
-let try_compile (e: Expr.expr) =
-  try (let _ = compile_to_string e in "Compilation successful.") with
+let try_compile (full_prog: (Expr.def list * Expr.expr)) =
+  try (let _ = compile_to_string full_prog in "Compilation successful.") with
   | Failure s -> ("Compile error: " ^ s)
 
-let test_run program_str outfile expected (args : string list) _ =
+let test_run_full program_str outfile expected (args : string list) _ =
   let full_outfile = "output/" ^ outfile in
-  let program = parse_string program_str in
+  let program = parse_string_full program_str in
   let result = run program full_outfile args in
   assert_equal (Right(expected ^ "\n")) result ~printer:either_printer
 
-let test_err program_str outfile errmsg (args : string list) _ =
+let test_run program_str outfile expected (args : string list) x =
+  test_run_full program_str outfile expected args x
+
+let test_err_full program_str outfile errmsg (args : string list) _ =
   let full_outfile = "output/" ^ outfile in
-  let program = try_parse program_str in
+  let program = try_parse_full program_str in
   match program with
   | Left(_) as e ->
     assert_equal
@@ -152,3 +168,5 @@ let test_err program_str outfile errmsg (args : string list) _ =
         | _ -> false
       )
 
+let test_err program_str outfile errmsg (args : string list) x =
+  test_err_full program_str outfile errmsg args x

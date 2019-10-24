@@ -3,6 +3,7 @@ type prim1 =
   | Sub1
   | IsNum
   | IsBool
+  | Print
 
 type prim2 =
   | Plus
@@ -22,3 +23,13 @@ type expr =
   | EBool of bool
   | EPrim1 of prim1 * expr
   | EPrim2 of prim2 * expr * expr
+  | EApp of string * expr list
+
+type typ =
+  | TNum
+  | TBool
+
+type def =
+  | DFun of string * (string * typ) list * typ * expr list
+
+type prog = def list * expr

@@ -10,6 +10,7 @@
 #define BOA_MAX ((1L << 62) - 1)
 
 extern int64_t our_code_starts_here(int64_t input_val) asm("our_code_starts_here");
+extern int64_t print(int64_t input_val) asm("print");
 extern void error(int64_t val) asm("error");
 
 int64_t print(int64_t val) {

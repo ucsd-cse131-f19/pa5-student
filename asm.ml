@@ -18,6 +18,7 @@ type arg =
   | Reg of reg
   | RegOffset of int * reg
   | Sized of size * arg
+  | Label of string
 
 type instruction =
   | IMov of arg * arg
@@ -69,72 +70,73 @@ let s_to_asm (s : size) : string =
 
 let rec arg_to_asm (a : arg) : string =
   match a with
-    | Const(n) -> sprintf "%d" n
-    | Const64(n) -> sprintf "%Ld" n
-    | HexConst(n) -> sprintf "%#Lx" n
-    | Reg(r) -> r_to_asm r
-    | RegOffset(n, r) ->
+  | Const(n) -> sprintf "%d" n
+  | Const64(n) -> sprintf "%Ld" n
+  | HexConst(n) -> sprintf "%#Lx" n
+  | Reg(r) -> r_to_asm r
+  | RegOffset(n, r) ->
       (* TODO *)
       failwith "Not yet implemented"
-    | Sized(s, a) ->
-      (s_to_asm s) ^ " " ^ (arg_to_asm a)
+  | Sized(s, a) ->
+    (s_to_asm s) ^ " " ^ (arg_to_asm a)
+  | Label(s) -> s
 
 let i_to_asm (i : instruction) : string =
   match i with
-    | IMov(dest, value) ->
-      sprintf "  mov %s, %s" (arg_to_asm dest) (arg_to_asm value)
-    | IAdd(dest, to_add) ->
-      sprintf "  add %s, %s" (arg_to_asm dest) (arg_to_asm to_add)
-    | ISub(dest, to_sub) ->
-      sprintf "  sub %s, %s" (arg_to_asm dest) (arg_to_asm to_sub)
-    | IMul(dest, to_mul) ->
-      sprintf "  imul %s, %s" (arg_to_asm dest) (arg_to_asm to_mul)
-    | IAnd(dest, mask) ->
-      sprintf "  and %s, %s" (arg_to_asm dest) (arg_to_asm mask)
-    | IOr(dest, mask) ->
+  | IMov(dest, value) ->
+    sprintf "  mov %s, %s" (arg_to_asm dest) (arg_to_asm value)
+  | IAdd(dest, to_add) ->
+    sprintf "  add %s, %s" (arg_to_asm dest) (arg_to_asm to_add)
+  | ISub(dest, to_sub) ->
+    sprintf "  sub %s, %s" (arg_to_asm dest) (arg_to_asm to_sub)
+  | IMul(dest, to_mul) ->
+    sprintf "  imul %s, %s" (arg_to_asm dest) (arg_to_asm to_mul)
+  | IAnd(dest, mask) ->
+    sprintf "  and %s, %s" (arg_to_asm dest) (arg_to_asm mask)
+  | IOr(dest, mask) ->
       (* TODO *)
       failwith "Not yet implemented"
-    | IXor(dest, mask) ->
+  | IXor(dest, mask) ->
       (* TODO *)
       failwith "Not yet implemented"
-    | IShr(dest, to_shift) ->
+  | IShr(dest, to_shift) ->
       (* TODO *)
       failwith "Not yet implemented"
-    | ISar(dest, to_shift) ->
+  | ISar(dest, to_shift) ->
       (* TODO *)
       failwith "Not yet implemented"
-    | IShl(dest, to_shift) ->
+  | IShl(dest, to_shift) ->
       (* TODO *)
       failwith "Not yet implemented"
-    | ICmp(left, right) ->
-      sprintf "  cmp %s, %s" (arg_to_asm left) (arg_to_asm right)
-    | IPush(arg) ->
+  | ICmp(left, right) ->
+    sprintf "  cmp %s, %s" (arg_to_asm left) (arg_to_asm right)
+  | IPush(arg) ->
       (* TODO *)
       failwith "Not yet implemented"
-    | IPop(arg) ->
+  | IPop(arg) ->
       (* TODO *)
       failwith "Not yet implemented"
-    | ICall(str) ->
+  | ICall(str) ->
       (* TODO *)
       failwith "Not yet implemented"
-    | ILabel(name) ->
-      name ^ ":"
-    | IJne(label) ->
-      sprintf "  jne near %s" label
-    | IJe(label) ->
-      sprintf "  je near %s" label
-    | IJno(label) ->
-      sprintf "  jno near %s" label
-    | IJo(label) ->
-      sprintf "  jo near %s" label
-    | IJl(label) ->
-      sprintf "  jl near %s" label
-    | IJg(label) ->
-      sprintf "  jg near %s" label
-    | IJmp(label) ->
-      sprintf "  jmp near %s" label
-    | IRet ->
-      "  ret"
+  | ILabel(name) ->
+    name ^ ":"
+  | IJne(label) ->
+    sprintf "  jne near %s" label
+  | IJe(label) ->
+    sprintf "  je near %s" label
+  | IJno(label) ->
+    sprintf "  jno near %s" label
+  | IJo(label) ->
+    sprintf "  jo near %s" label
+  | IJl(label) ->
+    sprintf "  jl near %s" label
+  | IJg(label) ->
+    sprintf "  jg near %s" label
+  | IJmp(label) ->
+    sprintf "  jmp near %s" label
+  | IRet ->
+    "  ret"
 
 let to_asm (is : instruction list) : string =
   List.fold_left (fun s i -> sprintf "%s\n%s" s (i_to_asm i)) "" is

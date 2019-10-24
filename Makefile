@@ -11,17 +11,17 @@ PKGS=oUnit,extlib,unix,sexplib,str
 
 BUILD=ocamlbuild -r -use-ocamlfind -pkg $(PKGS) $(OCAMLOPT)
 
-main: main.ml compile.ml runner.ml parser.ml
+main: main.ml compile.ml runner.ml parser.ml expr.ml typecheck.ml
 	$(BUILD) main.native
 	mv main.native main
 
-test: compile.ml runner.ml test.ml parser.ml
+test: compile.ml runner.ml test.ml parser.ml expr.ml typecheck.ml
 	mkdir -p output
 	$(BUILD) test.native
 	mv test.native test
 
 output/%.run: output/%.o main.c
-	clang -g -mstackrealign -o $@ main.c $<
+	clang -fsanitize=address -Wl,-no_pie -g -mstackrealign -o $@ main.c $<
 
 output/%.o: output/%.s
 	nasm -f $(FORMAT) -o $@ $<
