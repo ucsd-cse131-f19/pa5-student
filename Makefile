@@ -21,7 +21,7 @@ test: compile.ml runner.ml test.ml parser.ml expr.ml typecheck.ml
 	mv test.native test
 
 output/%.run: output/%.o main.c
-	clang -fsanitize=address -Wl,-no_pie -g -mstackrealign -o $@ main.c $<
+	clang -Wl,-no_pie -g -mstackrealign -o $@ main.c $<
 
 output/%.o: output/%.s
 	nasm -f $(FORMAT) -o $@ $<
