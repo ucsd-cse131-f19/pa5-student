@@ -1,9 +1,11 @@
 UNAME := $(shell uname)
 ifeq ($(UNAME), Linux)
   FORMAT=elf64
+  NOPIE=-no-pie
 else
 ifeq ($(UNAME), Darwin)
   FORMAT=macho64
+  NOPIE=-Wl,-no_pie
 endif
 endif
 
@@ -21,7 +23,7 @@ test: compile.ml runner.ml test.ml parser.ml expr.ml typecheck.ml
 	mv test.native test
 
 output/%.run: output/%.o main.c
-	clang -Wl,-no_pie -g -mstackrealign -o $@ main.c $<
+	clang $(NOPIE) -g -mstackrealign -o $@ main.c $<
 
 output/%.o: output/%.s
 	nasm -f $(FORMAT) -o $@ $<
