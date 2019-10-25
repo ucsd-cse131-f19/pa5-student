@@ -5,7 +5,7 @@ ifeq ($(UNAME), Linux)
 else
 ifeq ($(UNAME), Darwin)
   FORMAT=macho64
-  NOPIE=-Wl,-nopie
+  NOPIE=-Wl,-no_pie
 endif
 endif
 
