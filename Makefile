@@ -1,11 +1,11 @@
 UNAME := $(shell uname)
 ifeq ($(UNAME), Linux)
   FORMAT=elf64
-  NOPIE=-no-pie
+  NOPIE=-nopie
 else
 ifeq ($(UNAME), Darwin)
   FORMAT=macho64
-  NOPIE=-Wl,-no_pie
+  NOPIE=-Wl,-nopie
 endif
 endif
 
