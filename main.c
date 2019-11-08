@@ -3,6 +3,7 @@
 #include <string.h>
 #include <errno.h>
 
+// Suggested values for `true` and `false` to distinguish them from pointers
 #define TRUE  0x0000000000000006L
 #define FALSE 0x0000000000000002L
 

@@ -16,8 +16,9 @@ let rec find_def p x =
     if name = x then Some(d) else find_def rest x
 
 let stackloc si = RegOffset(-8 * si, RSP)
-let heaploc si = RegOffset(8 * si, R15)
+let heaploc si = RegOffset(8 * si, R15) (* In the kickoff, we store the start of the heap in R15 *)
 
+(* Suggested values for `true` and `false` to distinguish them from pointers *)
 let true_const  = HexConst(0x0000000000000006L)
 let false_const = HexConst(0x0000000000000002L)
 
@@ -70,8 +71,8 @@ let compile_to_string ((defs, main) as prog : Expr.prog) =
                 "  global our_code_starts_here\n" in
   let kickoff = "our_code_starts_here:\n" ^
                 "push rbx\n" ^
-                "  mov r15, rdi\n" ^ 
-                "  mov [rsp - 8], rsi\n" ^ 
+                "  mov r15, rdi\n" ^       (* rdi and r15 contain a pointer to the start of the heap *)
+                "  mov [rsp - 8], rsi\n" ^ (* rsi and [rsp-8] contain the input value *)
                 to_asm compiled_main ^
                 "\n  pop rbx\nret\n" in
   let postlude = []
