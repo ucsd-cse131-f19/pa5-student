@@ -13,11 +13,11 @@ PKGS=oUnit,extlib,unix,sexplib,str
 
 BUILD=ocamlbuild -r -use-ocamlfind -pkg $(PKGS) $(OCAMLOPT)
 
-main: main.ml compile.ml runner.ml parser.ml expr.ml typecheck.ml
+main: main.ml compile.ml runner.ml parser.ml expr.ml typecheck.ml asm.ml
 	$(BUILD) main.native
 	mv main.native main
 
-test: compile.ml runner.ml test.ml parser.ml expr.ml typecheck.ml
+test: compile.ml runner.ml test.ml parser.ml expr.ml typecheck.ml asm.ml
 	mkdir -p output
 	$(BUILD) test.native
 	mv test.native test

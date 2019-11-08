@@ -5,6 +5,7 @@ type reg =
   | RBX
   | RDI
   | RSP
+  | R15
 
 type size =
   | DWORD_PTR
@@ -61,6 +62,7 @@ let r_to_asm (r : reg) : string =
     | RBX -> "rbx"
     | RDI -> "rdi"
     | RSP -> "rsp"
+    | R15 -> "r15"
 
 let s_to_asm (s : size) : string =
   match s with

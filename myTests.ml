@@ -26,7 +26,7 @@ let t name program expected = name>::test_run program name expected []
 let terr_i name program expected args = name>::test_err program name expected args
 let t_err name program expected = name>::test_err program name expected []
 let t_parse name program expected =
-  name>::(fun _ -> assert_equal expected (Runner.parse_string program));;
+  name>::(fun _ -> assert_equal expected (Runner.parse_string_full program));;
 
 let myTestList =
   [ (* Fill in your tests here: *)

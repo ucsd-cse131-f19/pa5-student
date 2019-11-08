@@ -16,9 +16,10 @@ let rec find_def p x =
     if name = x then Some(d) else find_def rest x
 
 let stackloc si = RegOffset(-8 * si, RSP)
+let heaploc si = RegOffset(8 * si, R15)
 
-let true_const  = HexConst(0x0000000000000002L)
-let false_const = HexConst(0x0000000000000000L)
+let true_const  = HexConst(0x0000000000000006L)
+let false_const = HexConst(0x0000000000000002L)
 
 let rec well_formed_e (e : expr) (env : (string * int) list) : string list =
   match e with
@@ -69,7 +70,8 @@ let compile_to_string ((defs, main) as prog : Expr.prog) =
                 "  global our_code_starts_here\n" in
   let kickoff = "our_code_starts_here:\n" ^
                 "push rbx\n" ^
-                "  mov [rsp - 8], rdi\n" ^ 
+                "  mov r15, rdi\n" ^ 
+                "  mov [rsp - 8], rsi\n" ^ 
                 to_asm compiled_main ^
                 "\n  pop rbx\nret\n" in
   let postlude = []
